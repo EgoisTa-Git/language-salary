@@ -35,9 +35,7 @@ def get_hh_vacancies(language, *args):
         page_data = response.json()
         page = page_data['page']
         pages = page_data['pages']
-        print(f'Collecting data for {language}: page {page} from {pages}')
         if page >= pages:
-            print('Work done!')
             break
         payload['page'] = page + 1
         yield page_data['items']
@@ -62,9 +60,7 @@ def get_sj_vacancies(language, api_key):
         response.raise_for_status()
         page_data = response.json()
         page = payload['page']
-        print(f'Collecting data for {language}: page {page}')
         if not page_data['more']:
-            print('Work done!')
             yield page_data['objects']
             break
         payload['page'] = page + 1
@@ -154,7 +150,11 @@ def format_table(vacancy_statistics, table_name):
 if __name__ == '__main__':
     load_dotenv()
     sj_api_key = os.getenv('SJ_SECRET_KEY')
+    print('Collecting vacancies from HeadHunter...')
     hh_vacancies = get_found_vacancies(get_hh_vacancies, get_salary_from_hh)
+    print('Done!')
+    print('Collecting vacancies from SuperJob...')
     sj_vacancies = get_found_vacancies(get_sj_vacancies, get_salary_from_sj)
+    print('Done!')
     print(format_table(hh_vacancies, ' HeadHunter Moscow '))
     print(format_table(sj_vacancies, ' SuperJob Moscow '))
