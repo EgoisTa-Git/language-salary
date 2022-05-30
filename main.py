@@ -71,7 +71,7 @@ def predict_rub_salary(salary):
     salary_from = salary[0]
     salary_to = salary[1]
     currency_rur = salary[2]
-    if not currency_rur:
+    if not currency_rur or not salary_from and not salary_to:
         return None
     elif not salary_from:
         return int(salary_to * 0.8)
