@@ -89,9 +89,9 @@ def get_salary_from_sj(vacancy):
     return sal_from, sal_to, vacancy['currency'] == 'rub'
 
 
-def get_found_vacancies(get_vacancies, get_salary):
+def get_found_vacancies(get_vacancies, get_salary, languages):
     vacancies_found = {}
-    for lang in LANGUAGES:
+    for lang in languages:
         vacancies_per_lang = {
             'vacancies_found': 0,
             'vacancies_processed': 0,
@@ -151,10 +151,18 @@ if __name__ == '__main__':
     load_dotenv()
     sj_api_key = os.getenv('SJ_SECRET_KEY')
     print('Collecting vacancies from HeadHunter...')
-    hh_vacancies = get_found_vacancies(get_hh_vacancies, get_salary_from_hh)
+    hh_vacancies = get_found_vacancies(
+        get_hh_vacancies,
+        get_salary_from_hh,
+        LANGUAGES,
+    )
     print('Done!')
     print('Collecting vacancies from SuperJob...')
-    sj_vacancies = get_found_vacancies(get_sj_vacancies, get_salary_from_sj)
+    sj_vacancies = get_found_vacancies(
+        get_sj_vacancies,
+        get_salary_from_sj,
+        LANGUAGES,
+    )
     print('Done!')
     print(format_table(hh_vacancies, ' HeadHunter Moscow '))
     print(format_table(sj_vacancies, ' SuperJob Moscow '))
