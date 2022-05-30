@@ -7,8 +7,6 @@ import requests
 from dotenv import load_dotenv
 from terminaltables import DoubleTable
 
-SJ_API_URL = 'https://api.superjob.ru/2.0/vacancies/'
-HH_API_URL = 'https://api.hh.ru/vacancies'
 LANGUAGES = [
     'JavaScript',
     'Python',
@@ -24,6 +22,7 @@ LANGUAGES = [
 
 
 def get_hh_vacancies(language, *args):
+    hh_api_url = 'https://api.hh.ru/vacancies'
     payload = {
         'text': f'Программист {language}',
         'area': 1,
@@ -31,7 +30,7 @@ def get_hh_vacancies(language, *args):
         'period': 30,
     }
     while True:
-        response = requests.get(HH_API_URL, params=payload)
+        response = requests.get(hh_api_url, params=payload)
         response.raise_for_status()
         page_data = response.json()
         page = page_data['page']
@@ -46,6 +45,7 @@ def get_hh_vacancies(language, *args):
 
 
 def get_sj_vacancies(language, api_key):
+    sj_api_url = 'https://api.superjob.ru/2.0/vacancies/'
     headers = {
         'X-Api-App-Id': api_key,
     }
@@ -59,7 +59,7 @@ def get_sj_vacancies(language, api_key):
         'page': 0,
     }
     while True:
-        response = requests.get(SJ_API_URL, headers=headers, params=payload)
+        response = requests.get(sj_api_url, headers=headers, params=payload)
         response.raise_for_status()
         page_data = response.json()
         page = payload['page']
