@@ -88,15 +88,13 @@ def predict_rub_salary(salary):
 
 def get_salary_from_hh(vacancy):
     salary = vacancy['salary']
-    currency_rur = True if salary['currency'] == 'RUR' else False
-    return salary['from'], salary['to'], currency_rur
+    return salary['from'], salary['to'], salary['currency'] == 'RUR'
 
 
 def get_salary_from_sj(vacancy):
-    sal_from = vacancy['payment_from'] if vacancy['payment_from'] > 0 else None
-    sal_to = vacancy['payment_to'] if vacancy['payment_to'] > 0 else None
-    currency_rur = True if vacancy['currency'] == 'rub' else False
-    return sal_from, sal_to, currency_rur
+    sal_from = vacancy['payment_from']
+    sal_to = vacancy['payment_to']
+    return sal_from, sal_to, vacancy['currency'] == 'rub'
 
 
 def get_found_vacancies(get_vacancies, get_salary):
