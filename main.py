@@ -38,7 +38,6 @@ def get_hh_vacancies(language, *args):
         print(f'Collecting data for {language}: page {page} from {pages}')
         if page >= pages:
             print('Work done!')
-            yield page_data['items']
             break
         payload['page'] = page + 1
         yield page_data['items']
