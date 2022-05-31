@@ -67,15 +67,13 @@ def get_sj_vacancies(language, api_key):
         yield page_data['objects']
 
 
-def predict_rub_salary(salary_from, salary_to, currency_rur):
-    if not currency_rur or not salary_from and not salary_to:
-        return None
-    elif not salary_from:
-        return int(salary_to * 0.8)
-    elif not salary_to:
-        return int(salary_from * 1.2)
-    else:
+def predict_rub_salary(salary_from, salary_to):
+    if salary_from and salary_to:
         return int((salary_from + salary_to) / 2)
+    elif salary_to:
+        return int(salary_to * 0.8)
+    elif salary_from:
+        return int(salary_from * 1.2)
 
 
 def get_salary_from_hh(vacancy):
@@ -102,12 +100,9 @@ def get_found_vacancies(get_vacancies, get_salary, languages):
             for vacancy in vacancies:
                 vacancies_per_lang['vacancies_found'] += 1
                 salary = get_salary(vacancy)
-                predicted_salary = predict_rub_salary(
-                    salary[0],
-                    salary[1],
-                    salary[2],
-                )
-                if predicted_salary:
+                currency_in_rub = salary[2]
+                if currency_in_rub:
+                    predicted_salary = predict_rub_salary(salary[0], salary[1])
                     average_salaries.append(predicted_salary)
         try:
             vacancies_per_lang['average_salary'] = int(
