@@ -21,7 +21,7 @@ LANGUAGES = [
 ]
 
 
-def get_hh_vacancies(language, *args):
+def get_hh_vacancies(language):
     hh_api_url = 'https://api.hh.ru/vacancies'
     payload = {
         'text': f'Программист {language}',
