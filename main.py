@@ -1,6 +1,7 @@
 import datetime
 import os
 import time
+from functools import partial
 from operator import itemgetter
 
 import requests
@@ -60,11 +61,10 @@ def get_sj_vacancies(language, api_key):
         response.raise_for_status()
         page_data = response.json()
         page = payload['page']
+        yield page_data['objects']
         if not page_data['more']:
-            yield page_data['objects']
             break
         payload['page'] = page + 1
-        yield page_data['objects']
 
 
 def predict_rub_salary(salary_from, salary_to):
@@ -96,14 +96,13 @@ def get_found_vacancies(get_vacancies, get_salary, languages):
             'average_salary': 0,
         }
         average_salaries = []
-        for vacancies in get_vacancies(lang, sj_api_key):
+        for vacancies in get_vacancies(lang):
             for vacancy in vacancies:
                 vacancies_per_lang['vacancies_found'] += 1
-                salary = get_salary(vacancy)
-                currency_in_rub = salary[2]
+                salary_from, salary_to, currency_in_rub = get_salary(vacancy)
                 if currency_in_rub:
-                    predicted_salary = predict_rub_salary(salary[0], salary[1])
-                    average_salaries.append(predicted_salary)
+                    salary = predict_rub_salary(salary_from, salary_to)
+                    average_salaries.append(salary)
         try:
             vacancies_per_lang['average_salary'] = int(
                 sum(average_salaries) / len(average_salaries)
@@ -145,6 +144,7 @@ def format_table(vacancy_statistics, table_name):
 if __name__ == '__main__':
     load_dotenv()
     sj_api_key = os.getenv('SJ_SECRET_KEY')
+    get_found_sj_vacancies = partial(get_sj_vacancies, api_key=sj_api_key)
     print('Collecting vacancies from HeadHunter...')
     hh_vacancies = get_found_vacancies(
         get_hh_vacancies,
@@ -154,7 +154,7 @@ if __name__ == '__main__':
     print('Done!')
     print('Collecting vacancies from SuperJob...')
     sj_vacancies = get_found_vacancies(
-        get_sj_vacancies,
+        get_found_sj_vacancies,
         get_salary_from_sj,
         LANGUAGES,
     )
